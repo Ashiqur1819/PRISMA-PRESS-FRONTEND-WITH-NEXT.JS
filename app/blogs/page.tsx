@@ -1,9 +1,12 @@
+import blogPosts from "../service/blogPosts"
 
+const posts = await blogPosts()
+console.log(posts)
 
-function page() {
+const page = async() => {
   return (
     <div>
-        This is blog page.
+      
     </div>
   )
 }
