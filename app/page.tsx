@@ -1,11 +1,11 @@
-import Link from "next/link";
 
-export default function Home() {
+const Home = () => {
+
   return (
-    <div>
-      Hello World
-      <br />
-      <Link href={"/blogs"}>Blogs</Link>
-    </div>
+    <h1 className="text-4xl font-bold text-red-500">
+      Hello
+    </h1>
   );
 }
+
+export default Home
