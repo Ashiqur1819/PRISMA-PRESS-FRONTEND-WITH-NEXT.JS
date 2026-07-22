@@ -10,7 +10,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-full flex flex-col">
-        <h1>Main Layout</h1>
         {children}
         <Toaster position="top-right" richColors />
       </body>
