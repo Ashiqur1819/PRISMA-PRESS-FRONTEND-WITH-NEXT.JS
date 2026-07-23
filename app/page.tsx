@@ -1,11 +1,13 @@
+import { getMe } from "@/service/getMe";
 
-const Home = () => {
+const Home = async() => {
 
-  console.log(process.env.BACKEND_API_URL)
+  const user = await getMe()
+  console.log(user)
 
   return (
     <h1 className="text-4xl font-bold text-red-500">
-      Hello
+      Hello World
     </h1>
   );
 }
