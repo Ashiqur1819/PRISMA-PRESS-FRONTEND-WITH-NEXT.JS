@@ -14,7 +14,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +32,34 @@ const navItems = [
   { label: "Pricing", href: "#" },
 ]
 
-export function Navbar() {
+type User = {
+  success: boolean,
+  message: string,
+  data: {
+    id: string,
+    name: string,
+    email: string,
+    activeStatus: string,
+    role: string,
+    createdAt: string,
+    updatedAt: string,
+    profile: {
+      id: string,
+      userId: string,
+      profilePhoto: string,
+      bio: string,
+      createdAt: string,
+      updatedAt: string
+    }
+  }
+}
+
+type NavabarProps = {
+  user?: User
+}
+
+
+export function Navbar({user} : NavabarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
@@ -61,7 +88,7 @@ export function Navbar() {
 
         {/* Right side: user dropdown + mobile toggle */}
         <div className="flex items-center gap-2">
-          <UserDropdown />
+          <UserDropdown user={user} />
 
           <Button
             variant="ghost"
@@ -100,7 +127,7 @@ export function Navbar() {
   )
 }
 
-function UserDropdown() {
+function UserDropdown({user}: NavabarProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -110,17 +137,16 @@ function UserDropdown() {
             className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             aria-label="Open user menu"
           >
-            <Avatar className="size-9">
-              <AvatarImage src="/user-avatar.png" alt="Jane Cooper" />
-              <AvatarFallback>JC</AvatarFallback>
+            <Avatar className="size-9 justify-center items-center">
+              <User className="size-5" />
             </Avatar>
           </button>
         }
       />
       <DropdownMenuContent align="end" className="w-56">
         <div className="flex flex-col gap-0.5 px-1.5 py-1">
-          <span className="text-sm font-medium">Jane Cooper</span>
-          <span className="text-xs text-muted-foreground">jane@acme.com</span>
+          <span className="text-sm font-medium">{user?.data?.name || "Name"}</span>
+          <span className="text-xs text-muted-foreground">{user?.data?.email || "Email"}</span>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
