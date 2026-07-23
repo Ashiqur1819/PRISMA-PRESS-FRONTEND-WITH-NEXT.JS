@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
+import { ReactNode, useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Boxes,
   LogOut,
@@ -10,11 +10,11 @@ import {
   CreditCard,
   LifeBuoy,
   Menu,
-} from "lucide-react"
+} from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Avatar } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,44 +23,68 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import logout from "@/service/logout";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 
 const navItems = [
   { label: "Dashboard", href: "#" },
   { label: "Projects", href: "#" },
   { label: "Team", href: "#" },
   { label: "Pricing", href: "#" },
-]
+];
 
 type User = {
-  success: boolean,
-  message: string,
+  success: boolean;
+  message: string;
   data: {
-    id: string,
-    name: string,
-    email: string,
-    activeStatus: string,
-    role: string,
-    createdAt: string,
-    updatedAt: string,
+    id: string;
+    name: string;
+    email: string;
+    activeStatus: string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
     profile: {
-      id: string,
-      userId: string,
-      profilePhoto: string,
-      bio: string,
-      createdAt: string,
-      updatedAt: string
-    }
-  }
-}
+      id: string;
+      userId: string;
+      profilePhoto: string;
+      bio: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+  };
+};
 
 type NavabarProps = {
-  user?: User
-}
+  user?: User;
+};
 
+type UserDropdownProps = {
+  user?: User;
+  handleLogout: (action: string) => Promise<void>;
+};
 
-export function Navbar({user} : NavabarProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+export function Navbar({ user }: NavabarProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLogout, setIslogout] = useState(false);
+  const router = useRouter()
+
+  const handleLogout = async (action: string) => {
+    if (action === "logout") {
+      await logout();
+      setIslogout(true)
+    }
+  };
+
+  useEffect(() => {
+    if (isLogout) {
+      toast.success("Logout Successfull.");
+            router.push("/login")
+    }
+  }, [isLogout, router]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -70,7 +94,9 @@ export function Navbar({user} : NavabarProps) {
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Boxes className="size-5" aria-hidden="true" />
           </span>
-          <span className="text-2xl font-semibold tracking-tight">Prisma Press</span>
+          <span className="text-2xl font-semibold tracking-tight">
+            Prisma Press
+          </span>
         </Link>
 
         {/* Desktop menu items */}
@@ -88,7 +114,11 @@ export function Navbar({user} : NavabarProps) {
 
         {/* Right side: user dropdown + mobile toggle */}
         <div className="flex items-center gap-2">
-          <UserDropdown user={user} />
+          {/* <UserDropdown user={user} handleLogout={handleLogout} /> */}
+
+          {
+            !isLogout ? (<UserDropdown user={user} handleLogout={handleLogout} />) : <Link href={"/login"}>Login</Link>
+          }
 
           <Button
             variant="ghost"
@@ -105,10 +135,7 @@ export function Navbar({user} : NavabarProps) {
 
       {/* Mobile menu items */}
       <nav
-        className={cn(
-          "border-t md:hidden",
-          mobileOpen ? "block" : "hidden"
-        )}
+        className={cn("border-t md:hidden", mobileOpen ? "block" : "hidden")}
       >
         <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
           {navItems.map((item) => (
@@ -124,10 +151,10 @@ export function Navbar({user} : NavabarProps) {
         </div>
       </nav>
     </header>
-  )
+  );
 }
 
-function UserDropdown({user}: NavabarProps) {
+function UserDropdown({ user, handleLogout }: UserDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -145,8 +172,12 @@ function UserDropdown({user}: NavabarProps) {
       />
       <DropdownMenuContent align="end" className="w-56">
         <div className="flex flex-col gap-0.5 px-1.5 py-1">
-          <span className="text-sm font-medium">{user?.data?.name || "Name"}</span>
-          <span className="text-xs text-muted-foreground">{user?.data?.email || "Email"}</span>
+          <span className="text-sm font-medium">
+            {user?.data?.name || "Name"}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {user?.data?.email || "Email"}
+          </span>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -171,12 +202,17 @@ function UserDropdown({user}: NavabarProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem
+          onClick={async () => {
+            await handleLogout("logout");
+          }}
+          variant="destructive"
+        >
           <LogOut />
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
